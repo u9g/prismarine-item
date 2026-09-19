@@ -3,11 +3,13 @@ const nbt = require('prismarine-nbt')
 // 1.20.5 moved the custom name and the lore into data components, which carry a chat component as
 // NBT; the display.Name and display.Lore tags they replaced carried the same component as the JSON
 // string the server wrote. Read the NBT back as that string so customName and customLore have one
-// shape on every version, the one index.d.ts promises.
+// shape on every version, the one index.d.ts promises. A JS string is already that JSON (the setters
+// store one), but an NBT string tag is the literal text, so it is quoted like any other component:
+// nbt.string('{"text":"Hello"}') is the text {"text":"Hello"}, not a component that renders Hello.
 function chatComponentJson (component) {
   if (component == null || typeof component === 'string') return component
   const value = typeof component.type === 'string' && 'value' in component ? nbt.simplify(component) : component
-  return typeof value === 'string' ? value : JSON.stringify(value)
+  return JSON.stringify(value)
 }
 
 function loader (registryOrVersion) {
